@@ -1,0 +1,79 @@
+/* Example File for ESP MultiService IO
+ * see https://github.com/101010b/ESP32MultiServiceIO for details
+ */
+#include <stdint.h>
+
+#include "config.h"
+#include "MultiServiceIO.h"
+#include "main.h"
+
+MultiServiceIO *mio = NULL;
+UI32Var_t state;
+UI32Var_t global;
+
+void setup()
+{
+  Serial.begin(115200);
+  Serial.println();
+  delay(1000);
+  Serial.println("Initializing Device...");
+
+  // Try to initialize SPIFFS 
+  Serial.println("SPIFFS initialization");
+  bool spiffsok = false;
+  try {
+    if (SPIFFS.begin())
+      spiffsok = true;
+  }
+  catch (void *) {
+  }
+  if (!spiffsok) {
+    Serial.println("An Error occured initializing the SPIFFS System");
+    Serial.print("Waiting timout before formatting SPIFFS File.");
+    for (int i = 0; i < 30; i++)
+    {
+      delay(1000);
+      Serial.print(".");
+    }
+    Serial.println();
+    Serial.println("Trying to format the SPIFFS File System");
+    Serial.println("This may take some time - please be patient");
+    SPIFFS.format();
+    // Retry SPIFFS again
+    if (!SPIFFS.begin())
+    {
+      Serial.println("An Error occured initializing the SPIFFS System --> Stopping");
+      while (1)
+      {
+        Serial.print(".");
+        delay(1000);
+      }
+    }
+  }
+  
+  // Initialize MultiServiceIO Object
+  Serial.println("MultiServiceIO Object");
+  mio = new MultiServiceIO();
+  
+  Serial.println("LED Control Object");
+  
+  // Set some Parameters
+  X32Set(state, 0, 0, 1); // On/Off
+  X32Set(global, 1, 1, 31); // An arbitrary value from 1 to 31
+
+  // Create Variables
+  mio->addNewConfigValue("state", &state);
+  mio->addNewConfigValue("global", &global);
+
+  Serial.println("Setting Up MIO");
+  mio->setup();
+  Serial.println("Setup finished --> Loop Mode now");
+}
+
+void loop()
+{
+  mio->loop();
+  // Do whatever you want with the Parameters
+}
+
+// EOF
