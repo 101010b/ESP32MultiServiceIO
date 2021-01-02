@@ -8,5 +8,8 @@ Features:
 * Parameters can also be accessed via MQTT on the WLAN.
 * MQTT Publishes the Parameters together with their ranges
 
-There is also a simple Android App to configure the device and the parameters via BLE (separate repository).
+There is also a simple Android App to configure the device and the parameters via BLE: https://github.com/101010b/ESP32MultiServiceIOConfiguratorAndroidApp
+
+An Example Embedded Project can be found here: https://github.com/101010b/ESP32LedStripExample
+
 The python directory contains a skript that converts the MQTT-Parameters to the required OpenHAB items/things/sitemap files.
